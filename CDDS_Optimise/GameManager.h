@@ -18,6 +18,7 @@ public:
 private:
 
 	int screenWidth = 800;
+
 	int screenHeight = 450;
 
 	TextureManager tm;
