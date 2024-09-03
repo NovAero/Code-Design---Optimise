@@ -19,6 +19,7 @@ void Critter::Init(Vector2 position, Vector2 velocity, float radius, const Textu
 	m_position = position;
 	m_velocity = velocity;
 	m_radius = radius;
+
 	
 	m_texture = texture;	
 
