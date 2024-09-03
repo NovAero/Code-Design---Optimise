@@ -1,5 +1,5 @@
 #include "Critter.h"
-#include "TextureManager.h"
+
 
 Critter::Critter()
 {
@@ -11,23 +11,24 @@ Critter::Critter()
 
 Critter::~Critter()
 {
+	UnloadTexture(m_texture);
 	m_isLoaded = false;
 }
 
-void Critter::Init(Vector2 position, Vector2 velocity, float radius, const Texture2D texture)
+void Critter::Init(Vector2 position, Vector2 velocity, float radius, const char* texture)
 {
 	m_position = position;
 	m_velocity = velocity;
 	m_radius = radius;
-
 	
-	m_texture = texture;	
+	m_texture = LoadTexture(texture);	
 
 	m_isLoaded = true;
 }
 
 void Critter::Destroy()
 {
+	UnloadTexture(m_texture);
 	m_isLoaded = false;
 }
 

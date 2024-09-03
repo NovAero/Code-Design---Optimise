@@ -168,16 +168,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Critter.cpp" />
-    <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Critter.h" />
-    <ClInclude Include="d_array.h" />
-    <ClInclude Include="GameManager.h" />
-    <ClInclude Include="Graph.h" />
-    <ClInclude Include="TextureManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
