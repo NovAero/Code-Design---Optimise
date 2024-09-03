@@ -32,10 +32,8 @@ void GameManager::Init()
 
     Vector2 velocity = { -100 + (rand() % 200), -100 + (rand() % 200) };
     velocity = Vector2Scale(Vector2Normalize(velocity), MAX_VELOCITY);
+
     destroyer.Init(Vector2{ (float)(screenWidth >> 1), (float)(screenHeight >> 1) }, velocity, 20, tm.GetTexture("9.png"));
-
-    
-
 }
 
 void GameManager::Run()

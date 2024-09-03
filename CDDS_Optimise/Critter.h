@@ -24,7 +24,7 @@ public:
 	void Update(float dt);
 	void Draw();
 
-	float GetX() { return m_position.x; }
+	float GetX() { return m_position.x; } 
 	float GetY() { return m_position.y; }
 	void SetX(float x) { m_position.x = x; }
 	void SetY(float y) { m_position.y = y; }
@@ -43,4 +43,3 @@ public:
 	bool IsDead() { return m_isLoaded == false; }
 
 };
-

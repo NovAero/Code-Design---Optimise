@@ -23,6 +23,11 @@ void TextureManager::LoadNewTexture(std::string fileName)
 
 }
 
+void TextureManager::Empty()
+{
+	textureMap.clear();
+}
+
 unsigned int TextureManager::GenerateHash(std::string fileName)
 {
 	const int seed = 237;
