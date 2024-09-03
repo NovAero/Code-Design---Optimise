@@ -10,18 +10,24 @@ class GameManager
 {
 public:
 
+	GameManager();
+	~GameManager();
+
+	static GameManager& GetGameManager() { static GameManager instance; return instance; }
+
 	void Init();
 	void Run();
 	void Exit();
 
+	int ScreenSpace() const;
+
+public:
+	const int screenWidth = 800;
+	const int screenHeight = 450;
 
 private:
-
-	int screenWidth = 800;
-
-	int screenHeight = 450;
-
 	TextureManager tm;
+	Grid grid;
 
 	// create some critters
 

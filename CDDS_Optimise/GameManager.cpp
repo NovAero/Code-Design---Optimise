@@ -1,6 +1,15 @@
 #include "GameManager.h"
 #include <random>
 
+GameManager::GameManager()
+{
+}
+
+GameManager::~GameManager()
+{
+}
+
+
 void GameManager::Init()
 {
     // Initialization
@@ -145,7 +154,7 @@ void GameManager::Run()
                 Vector2 pos = destroyer.GetPosition();
                 pos = Vector2Add(pos, Vector2Scale(normal, -50));
                 // its pretty ineficient to keep reloading textures. ...if only there was something else we could do
-                critters[i].Init(pos, Vector2Scale(normal, -MAX_VELOCITY), 12, tm.GetTexture("10.png"));
+                critters[i].Init(, pos, Vector2Scale(normal, -MAX_VELOCITY), 12, tm.GetTexture("10.png"));
                 break;
             }
         }
@@ -180,4 +189,10 @@ void GameManager::Exit()
     {
         critters[i].Destroy();
     }
+
+}
+
+int GameManager::ScreenSpace() const
+{
+    return screenHeight * screenWidth;
 }
