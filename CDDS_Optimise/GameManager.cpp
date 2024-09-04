@@ -7,7 +7,7 @@ GameManager::GameManager()
 
 GameManager::~GameManager()
 {
-    delete destroyer;
+
 }
 
 
@@ -23,7 +23,7 @@ bool GameManager::Init()
 
     srand(time(NULL));
 
-    critters = new Critter[CRITTER_COUNT + (CRITTER_COUNT / 4)];
+    critters = new Critter[CRITTER_COUNT + 10];
 
     for (int i = 0; i < CRITTER_COUNT; i++)
     {
@@ -32,9 +32,10 @@ bool GameManager::Init()
         // normalize and scale by a random speed
         velocity = Vector2Scale(Vector2Normalize(velocity), MAX_VELOCITY);
 
-        // create a critter in a random location
-        critters[i].Init(
-            { (float)(5 + rand() % (screenWidth - 10)), (float)(5 + (rand() % screenHeight - 10)) },
+        //// create a critter in a random location
+        //critters[i].Init(
+
+        critters[i].Init(Vector2{ (float)(5 + rand() % (screenWidth - 10)), (float)(5 + (rand() % screenHeight - 10)) },
             velocity,
             12, tm.GetTexture("10.png"));
 
@@ -60,8 +61,6 @@ void GameManager::Run()
        //----------------------------------------------------------------------------------
        // TODO: Update your variables here
        //----------------------------------------------------------------------------------
-
-
 
     float delta = GetFrameTime();
 
@@ -111,6 +110,7 @@ void GameManager::Run()
 
         // kill any critter touching the destroyer
         // simple circle-to-circle collision check
+
         float dist = Vector2Distance(critters[i].GetPosition(), destroyer->GetPosition());
         if (dist < critters[i].GetRadius() + destroyer->GetRadius())
         {
@@ -181,20 +181,18 @@ void GameManager::Run()
     ClearBackground(RAYWHITE);
 
     // draw the critters
-    /*for (int i = 0; i < CRITTER_COUNT; i++)
+    for (int i = 0; i < CRITTER_COUNT; i++)
     {
         critters[i].Draw();
-    }*/
+    }
     // draw the destroyer
+    destroyer->Draw();
     // (if you're wondering why it looks a little odd when sometimes critters are destroyed when they're not quite touching the 
     // destroyer, it's because the origin is at the top-left. ...you could fix that!)
-    destroyer->Draw();
 
     DrawFPS(10, 10);
-    //DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
 
     EndDrawing();
-
 }
 
 void GameManager::Exit()

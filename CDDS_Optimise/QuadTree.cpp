@@ -3,8 +3,8 @@
 
 Quadtree::Quadtree(const int width, const int height) : m_objects(nullptr), m_children(nullptr)
 {
-	m_boundary.m_halfSize.x = width/2;
-	m_boundary.m_halfSize.y = height/2;
+	m_boundary.m_halfSize.x = (float)width/2;
+	m_boundary.m_halfSize.y = (float)height/2;
 	m_boundary.m_centre = m_boundary.m_halfSize;
 }
 Quadtree::Quadtree(AABB boundary) : m_boundary(boundary), m_objects(nullptr), m_children(nullptr)
@@ -14,32 +14,34 @@ Quadtree::~Quadtree()
 {
 	if (m_children != nullptr) {
 		for (int i = 0; i < 4; i++) {
-			if (m_children[i] != nullptr)
+			if (m_children[i] != nullptr) {
 				delete m_children[i];
+			}
 		}
 		delete m_children;
 		m_children = nullptr;
 	}
-	if (m_objects != nullptr) {
+	/*if (m_objects != nullptr) {
 		for (int i = 0; i < m_capacity; i++) {
-			if (m_objects[i] != nullptr)
+			if (m_objects[i] != nullptr) {
 				delete m_objects[i];
+			}
 		}
 		delete m_objects;
 		m_objects = nullptr;
-	}
+	}*/
 }
 
 bool Quadtree::Insert(Critter* gameObject) {
 	if (m_boundary.contains(gameObject->m_bounds.m_centre) == false)
 		return false;
 	// if this node doesn't have children (hasn't been subdivided), then try to
-	// insert the gameobject in this node's object lise
+	// insert the gameobject in this node's object list
 	if (m_children == nullptr) {
 		// is the objects array full?
 		if (m_objects == nullptr)
 		{
-			m_objects = new Critter * [m_capacity];
+			m_objects = new Critter*[m_capacity];
 			memset(m_objects, 0, sizeof(Critter*) * m_capacity);
 		}
 		if (m_objects[m_capacity - 1] == nullptr) {
@@ -104,6 +106,14 @@ void Quadtree::Subdivide()
 
 void Quadtree::Update(float deltaTime)
 {
+	//If the box has children to propagate to
+	if (m_children != nullptr) {
+		for (int i = 0; i < 4; i++) {
+			m_children[i]->Update(deltaTime);
+		}
+	}
+
+
 }
 void Quadtree::Draw()
 {
@@ -127,15 +137,10 @@ void Quadtree::Draw()
 		m_boundary.m_centre.y + m_boundary.m_halfSize.y,
 		m_boundary.m_centre.x + m_boundary.m_halfSize.x,
 		m_boundary.m_centre.y - m_boundary.m_halfSize.y, RED);
+
 	if (m_children != nullptr) {
 		for (int i = 0; i < 4; i++) {
 			m_children[i]->Draw();
-		}
-	}
-	if (m_objects != nullptr) {
-		for (int i = 0; i < m_capacity; i++) {
-			if (m_objects[i] != nullptr)
-				m_objects[i]->Draw();
 		}
 	}
 }
