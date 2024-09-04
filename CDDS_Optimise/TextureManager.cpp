@@ -1,7 +1,7 @@
 #include "TextureManager.h"
 
 
-const Texture2D TextureManager::GetTexture(std::string fileName)
+Texture2D TextureManager::GetTexture(std::string fileName)
 {
 	if (textureMap.find(GenerateHash(fileName)) != textureMap.end()) {
 		return textureMap.find(GenerateHash(fileName))->second;

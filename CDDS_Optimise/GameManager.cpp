@@ -7,10 +7,11 @@ GameManager::GameManager()
 
 GameManager::~GameManager()
 {
+    delete destroyer;
 }
 
 
-void GameManager::Init()
+bool GameManager::Init()
 {
     // Initialization
     //--------------------------------------------------------------------------------------
@@ -36,13 +37,21 @@ void GameManager::Init()
             { (float)(5 + rand() % (screenWidth - 10)), (float)(5 + (rand() % screenHeight - 10)) },
             velocity,
             12, tm.GetTexture("10.png"));
-    }
 
+        m_quadtree.Insert(&critters[i]);
+    }
 
     Vector2 velocity = { -100 + (rand() % 200), -100 + (rand() % 200) };
     velocity = Vector2Scale(Vector2Normalize(velocity), MAX_VELOCITY);
 
-    destroyer.Init(Vector2{ (float)(screenWidth >> 1), (float)(screenHeight >> 1) }, velocity, 20, tm.GetTexture("9.png"));
+    destroyer = new Critter(Vector2{ (float)(screenWidth >> 1), (float)(screenHeight >> 1) }, velocity, 20, tm.GetTexture("9.png"));
+
+    m_quadtree.Insert(destroyer);
+
+    nextSpawnPos = destroyer->GetPosition();
+
+    return true;
+
 }
 
 void GameManager::Run()
@@ -52,26 +61,28 @@ void GameManager::Run()
        // TODO: Update your variables here
        //----------------------------------------------------------------------------------
 
+
+
     float delta = GetFrameTime();
 
     // update the destroyer
-    destroyer.Update(delta);
+    destroyer->Update(delta);
     // check each critter against screen bounds
-    if (destroyer.GetX() < 0) {
-        destroyer.SetX(0);
-        destroyer.SetVelocity(Vector2{ -destroyer.GetVelocity().x, destroyer.GetVelocity().y });
+    if (destroyer->GetX() < 0) {
+        destroyer->SetX(0);
+        destroyer->SetVelocity(Vector2{ -destroyer->GetVelocity().x, destroyer->GetVelocity().y });
     }
-    if (destroyer.GetX() > screenWidth) {
-        destroyer.SetX(screenWidth);
-        destroyer.SetVelocity(Vector2{ -destroyer.GetVelocity().x, destroyer.GetVelocity().y });
+    if (destroyer->GetX() > screenWidth) {
+        destroyer->SetX(screenWidth);
+        destroyer->SetVelocity(Vector2{ -destroyer->GetVelocity().x, destroyer->GetVelocity().y });
     }
-    if (destroyer.GetY() < 0) {
-        destroyer.SetY(0);
-        destroyer.SetVelocity(Vector2{ destroyer.GetVelocity().x, -destroyer.GetVelocity().y });
+    if (destroyer->GetY() < 0) {
+        destroyer->SetY(0);
+        destroyer->SetVelocity(Vector2{ destroyer->GetVelocity().x, -destroyer->GetVelocity().y });
     }
-    if (destroyer.GetY() > screenHeight) {
-        destroyer.SetY(screenHeight);
-        destroyer.SetVelocity(Vector2{ destroyer.GetVelocity().x, -destroyer.GetVelocity().y });
+    if (destroyer->GetY() > screenHeight) {
+        destroyer->SetY(screenHeight);
+        destroyer->SetVelocity(Vector2{ destroyer->GetVelocity().x, -destroyer->GetVelocity().y });
     }
 
     // update the critters
@@ -100,8 +111,8 @@ void GameManager::Run()
 
         // kill any critter touching the destroyer
         // simple circle-to-circle collision check
-        float dist = Vector2Distance(critters[i].GetPosition(), destroyer.GetPosition());
-        if (dist < critters[i].GetRadius() + destroyer.GetRadius())
+        float dist = Vector2Distance(critters[i].GetPosition(), destroyer->GetPosition());
+        if (dist < critters[i].GetRadius() + destroyer->GetRadius())
         {
             critters[i].Destroy();
             // this would be the perfect time to put the critter into an object pool
@@ -148,39 +159,42 @@ void GameManager::Run()
         {
             if (critters[i].IsDead())
             {
-                Vector2 normal = Vector2Normalize(destroyer.GetVelocity());
+                Vector2 normal = Vector2Normalize(destroyer->GetVelocity());
 
                 // get a position behind the destroyer, and far enough away that the critter won't bump into it again
-                Vector2 pos = destroyer.GetPosition();
+                Vector2 pos = destroyer->GetPosition();
                 pos = Vector2Add(pos, Vector2Scale(normal, -50));
                 // its pretty ineficient to keep reloading textures. ...if only there was something else we could do
-                critters[i].Init(, pos, Vector2Scale(normal, -MAX_VELOCITY), 12, tm.GetTexture("10.png"));
+                critters[i].Init(pos, Vector2Scale(normal, -MAX_VELOCITY), 12, tm.GetTexture("10.png"));
                 break;
             }
         }
-        nextSpawnPos = destroyer.GetPosition();
+        nextSpawnPos = destroyer->GetPosition();
     }
 
     // Draw
     //----------------------------------------------------------------------------------
     BeginDrawing();
 
+    m_quadtree.Draw();
+
     ClearBackground(RAYWHITE);
 
     // draw the critters
-    for (int i = 0; i < CRITTER_COUNT; i++)
+    /*for (int i = 0; i < CRITTER_COUNT; i++)
     {
         critters[i].Draw();
-    }
+    }*/
     // draw the destroyer
     // (if you're wondering why it looks a little odd when sometimes critters are destroyed when they're not quite touching the 
     // destroyer, it's because the origin is at the top-left. ...you could fix that!)
-    destroyer.Draw();
+    destroyer->Draw();
 
     DrawFPS(10, 10);
     //DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
 
     EndDrawing();
+
 }
 
 void GameManager::Exit()

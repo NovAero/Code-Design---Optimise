@@ -23,17 +23,16 @@
 
 int main(int argc, char* argv[])
 {
-    GameManager gm;
 
-    gm.Init();
+    GameManager::GetGameManager().Init();
     
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        gm.Run();
+        GameManager::GetGameManager().Run();
     }
 
-    gm.Exit();
+    GameManager::GetGameManager().Exit();
 
     // De-Initialization
     //--------------------------------------------------------------------------------------   

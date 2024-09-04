@@ -5,6 +5,7 @@
 #include <time.h>
 #include "Critter.h"
 #include <vector>
+#include "QuadTree.h"
 
 class GameManager
 {
@@ -15,29 +16,29 @@ public:
 
 	static GameManager& GetGameManager() { static GameManager instance; return instance; }
 
-	void Init();
-	void Run();
-	void Exit();
+	virtual bool Init();
+	virtual void Run();
+	virtual void Exit();
 
 	int ScreenSpace() const;
 
 public:
 	const int screenWidth = 800;
 	const int screenHeight = 450;
-
-private:
-	TextureManager tm;
-	Grid grid;
-
-	// create some critters
-
 	const int CRITTER_COUNT = 50;
 	const int MAX_VELOCITY = 80;
 
+private:
+	TextureManager tm;
+	Quadtree m_quadtree{ screenWidth, screenHeight };
+
+	// create some critters
+
+
 	Critter* critters;
-	Critter destroyer;
+	Critter* destroyer;
 
 	float timer = 1;
-	Vector2 nextSpawnPos = destroyer.GetPosition();
+	Vector2 nextSpawnPos;
 };
 

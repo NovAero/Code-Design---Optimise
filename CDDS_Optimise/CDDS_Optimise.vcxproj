@@ -169,16 +169,16 @@
   <ItemGroup>
     <ClCompile Include="Critter.cpp" />
     <ClCompile Include="GameManager.cpp" />
-    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AABB.h" />
     <ClInclude Include="Critter.h" />
     <ClInclude Include="d_array.h" />
     <ClInclude Include="GameManager.h" />
-    <ClInclude Include="Graph.h" />
-    <ClInclude Include="Grid.h" />
+    <ClInclude Include="QuadTree.h" />
     <ClInclude Include="TextureManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

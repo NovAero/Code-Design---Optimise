@@ -1,8 +1,7 @@
 #include "Critter.h"
 #include "TextureManager.h"
-#include "Grid.h"
 
-Critter::Critter() : grid_()
+Critter::Critter()
 {
 	m_position = Vector2{ 0, 0 };
 	m_velocity = Vector2{ 0, 0 };
@@ -10,27 +9,29 @@ Critter::Critter() : grid_()
 	m_isLoaded = false;
 }
 
+Critter::Critter(Vector2 position, Vector2 velocity, float radius, Texture2D texture) : Critter()
+{
+	Init(position, velocity, radius, texture);
+}
+
 Critter::~Critter()
 {
 	m_isLoaded = false;
 }
 
-void Critter::Init(Grid* grid, Vector2 position, Vector2 velocity, float radius, Texture2D texture)
+void Critter::Init(Vector2 position, Vector2 velocity, float radius, Texture2D texture)
 {
-	grid_ = grid;
-	prev_ = NULL;
-	next_ = NULL;
-
-
 	m_position = position;
 	m_velocity = velocity;
 	m_radius = radius;
 
 	m_texture = texture;
 
-	m_isLoaded = true;
+	m_bounds.m_centre = position;
+	m_bounds.m_halfSize.x = radius/2;
+	m_bounds.m_halfSize.y = radius/2;
 	
-	grid_->Add(this);
+	m_isLoaded = true;
 }
 
 void Critter::Destroy()
@@ -48,7 +49,6 @@ void Critter::Update(float dt)
 
 	m_isDirty = false;
 }
-
 
 void Critter::Draw()
 {

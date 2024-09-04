@@ -1,10 +1,12 @@
 #pragma once
 #include "raylib.h"
-#include "Grid.h"
+#include "AABB.h"
 
 class Critter
 {
-	friend class Grid;
+public:
+	AABB m_bounds;
+
 protected:	
 	Vector2 m_position;
 	Vector2 m_velocity;
@@ -12,19 +14,15 @@ protected:
 
 	Texture2D m_texture;
 
-	Grid* grid_;
-
-	Critter* prev_;
-	Critter* next_;
-
 	bool m_isLoaded;
 	bool m_isDirty;		// indicates if we've already processed a collision response for this critter
 	
 public:
 	Critter();
+	Critter(Vector2 position, Vector2 velocity, float radius, Texture2D texture);
 	~Critter();
 
-	void Init(Grid* grid,Vector2 position, Vector2 velocity, float radius, Texture2D texture);
+	void Init(Vector2 position, Vector2 velocity, float radius, Texture2D texture);
 	void Destroy();
 	void Update(float dt);
 	void Draw();

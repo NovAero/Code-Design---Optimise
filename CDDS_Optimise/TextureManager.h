@@ -17,7 +17,7 @@ protected:
 
 public:
 
-	const Texture2D GetTexture(std::string fileName);
+	Texture2D GetTexture(std::string fileName);
 
 	void LoadNewTexture(std::string fileName);
 	void Empty();
