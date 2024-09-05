@@ -1,5 +1,6 @@
 #include "GameManager.h"
 #include <random>
+#include <iostream>
 
 GameManager::GameManager() {}
 
@@ -20,7 +21,9 @@ bool GameManager::Init()
     critters = new Critter[CRITTER_COUNT + 10];
     grid = new Grid;
 
-    for (int i = 0; i < CRITTER_COUNT; i++)
+    int i;
+
+    for (i = 0; i < CRITTER_COUNT; i++)
     {
         // create a random direction vector for the velocity
         Vector2 velocity = { -100 + (rand() % 200), -100 + (rand() % 200) };
@@ -28,15 +31,15 @@ bool GameManager::Init()
         velocity = Vector2Scale(Vector2Normalize(velocity), MAX_VELOCITY);
 
         // create a critter in a random location
-          critters[i].Init(grid, Vector2{ (float)(5 + rand() % (screenWidth - 10)), (float)(5 + (rand() % screenHeight - 10)) },
+        critters[i].Init(grid, Vector2{ (float)(5 + rand() % (screenWidth - 10)), (float)(5 + (rand() % screenHeight - 10)) },
             velocity,
-            12, tm.GetTexture("10.png"));
+            12, tm.GetTexture("10.png"), false);
     }
 
     Vector2 velocity = { -100 + (rand() % 200), -100 + (rand() % 200) };
     velocity = Vector2Scale(Vector2Normalize(velocity), MAX_VELOCITY);
 
-    destroyer = new Critter(grid, Vector2{ (float)(screenWidth >> 1), (float)(screenHeight >> 1) }, velocity, 20, tm.GetTexture("9.png"));
+    destroyer = new Critter(grid, Vector2{ (float)(screenWidth >> 1), (float)(screenHeight >> 1) }, velocity, 20, tm.GetTexture("9.png"), true);
 
     nextSpawnPos = destroyer->GetPosition();
 
@@ -96,46 +99,24 @@ void GameManager::Run()
             critters[i].SetVelocity(Vector2{ critters[i].GetVelocity().x, -critters[i].GetVelocity().y });
         }
 
-        // kill any critter touching the destroyer
-        // simple circle-to-circle collision check
-
-        float dist = Vector2Distance(critters[i].GetPosition(), destroyer->GetPosition());
-        if (dist < critters[i].GetRadius() + destroyer->GetRadius())
-        {
-            critters[i].Destroy();
-            // this would be the perfect time to put the critter into an object pool
-        }
     }
 
-    // check for critter-on-critter collisions
-    for (int i = 0; i < CRITTER_COUNT; i++)
-    {
-        for (int j = 0; j < CRITTER_COUNT; j++) {
-            if (i == j || critters[i].IsDirty()) // note: the other critter (j) could be dirty - that's OK
-                continue;
-            // check every critter against every other critter
-            float dist = Vector2Distance(critters[i].GetPosition(), critters[j].GetPosition());
-            if (dist < critters[i].GetRadius() + critters[j].GetRadius())
-            {
-                // collision!
-                // do math to get critters bouncing
-                Vector2 normal = Vector2Normalize(Vector2Subtract(critters[j].GetPosition(), critters[i].GetPosition()));
+//     check for critter-on-critter collisions*/
+    //for (int i = 0; i < CRITTER_COUNT; i++)
+    //{
+    //    for (int j = 0; j < CRITTER_COUNT; j++) {
+    //        if (i == j || critters[i].IsDirty()) // note: the other critter (j) could be dirty - that's OK
+    //            continue;
+    //        // check every critter against every other critter
+    //        float dist = Vector2Distance(critters[i].GetPosition(), critters[j].GetPosition());
+    //        if (dist < critters[i].GetRadius() + critters[j].GetRadius())
+    //        {
+    //            
+    //            break;
+    //        }
+    //    }
+    //}
 
-                // not even close to real physics, but fine for our needs
-                critters[i].SetVelocity(Vector2Scale(normal, -MAX_VELOCITY));
-                // set the critter to *dirty* so we know not to process any more collisions on it
-                critters[i].SetDirty();
-
-                // we still want to check for collisions in the case where 1 critter is dirty - so we need a check 
-                // to make sure the other critter is clean before we do the collision response
-                if (!critters[j].IsDirty()) {
-                    critters[j].SetVelocity(Vector2Scale(normal, MAX_VELOCITY));
-                    critters[j].SetDirty();
-                }
-                break;
-            }
-        }
-    }
 
     timer -= delta;
     if (timer <= 0)
@@ -153,12 +134,14 @@ void GameManager::Run()
                 Vector2 pos = destroyer->GetPosition();
                 pos = Vector2Add(pos, Vector2Scale(normal, -50));
                 // its pretty ineficient to keep reloading textures. ...if only there was something else we could do
-                critters[i].Init(grid, pos, Vector2Scale(normal, -MAX_VELOCITY), 12, tm.GetTexture("10.png"));
+                critters[i].Init(grid, pos, Vector2Scale(normal, -MAX_VELOCITY), 12, tm.GetTexture("10.png"), false);
                 break;
             }
         }
         nextSpawnPos = destroyer->GetPosition();
     }
+
+    grid->HandleCritters();
 
     // Draw
     //----------------------------------------------------------------------------------
@@ -179,15 +162,6 @@ void GameManager::Run()
     // destroyer, it's because the origin is at the top-left. ...you could fix that!)
 
     DrawFPS(10, 10);
-
-    char d_pos[4];
-
-    d_pos[0] = destroyer->posInGrid.x + 48;
-    d_pos[1] = ',';
-    d_pos[2] = destroyer->posInGrid.y + 48;
-    d_pos[3] = '\0';
-
-    DrawText(d_pos, 10, 30, 30, DARKGREEN);
 
     EndDrawing();
 }

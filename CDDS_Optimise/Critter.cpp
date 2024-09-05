@@ -1,7 +1,9 @@
 #include "Critter.h"
 #include "TextureManager.h"
+#include "raymath.h"
 
-constexpr float ATTACK_DISTANCE = 10.f;
+constexpr float ATTACK_DISTANCE = 15.f;
+const int MAX_VELOCITY = 80;
 
 Critter::Critter()
 {
@@ -11,9 +13,9 @@ Critter::Critter()
 	m_isLoaded = false;
 }
 
-Critter::Critter(Grid* grid, Vector2 position, Vector2 velocity, float radius, Texture2D texture) : Critter()
+Critter::Critter(Grid* grid, Vector2 position, Vector2 velocity, float radius, Texture2D texture, bool destroyer) : Critter()
 {
-	Init(grid, position, velocity, radius, texture);
+	Init(grid, position, velocity, radius, texture, destroyer);
 }
 
 Critter::~Critter()
@@ -21,8 +23,10 @@ Critter::~Critter()
 	m_isLoaded = false;
 }
 
-void Critter::Init(Grid* grid, Vector2 position, Vector2 velocity, float radius, Texture2D texture)
+void Critter::Init(Grid* grid, Vector2 position, Vector2 velocity, float radius, Texture2D texture, bool destroyer)
 {
+	IsDestroyer = destroyer;
+
 	grid_ = grid;
 
 	m_position = position;
@@ -44,8 +48,10 @@ void Critter::Update(float dt)
 {
 	if (m_isLoaded == false)
 		return;
-	
-	Move(Vector2{ m_position.x += m_velocity.x * dt, m_position.y += m_velocity.y * dt });
+
+	Vector2 moveVector = { m_velocity.x * dt, m_velocity.y * dt };
+
+	Move(moveVector);
 
 	//m_position.x += m_velocity.x * dt;
 	//m_position.y += m_velocity.y * dt;
@@ -68,11 +74,6 @@ void Critter::Move(Vector2 vec)
 
 
 
-
-
-
-
-
 //Grid Functions
 
 void Grid::Add(Critter* unit)
@@ -82,6 +83,11 @@ void Grid::Add(Critter* unit)
 	int cellY = (int)(unit->m_position.y / Grid::CELL_SIZE);
 
 	// Add to the front of list for the cell it's in.
+
+	if (cellX >= 8) cellX = 7; //Sinze the position can truncate UP, if x or y == 8 they need to be bumped down
+	if (cellY >= 8) cellY = 7;
+	if (cellX <= -1) cellX = 0;
+	if (cellY <= -1) cellY = 0;
 
 	unit->prev_ = NULL;
 	unit->next_ = cells_[cellX][cellY];
@@ -107,11 +113,39 @@ void Grid::HandleCritters()
 
 void Grid::HandleCollision(Critter* unit, Critter* other)
 {
+	if (unit->IsDestroyer == true && other->IsDestroyer == true) {
+		return;
+	}
+
+	if (unit->IsDestroyer == true) {
+		other->Destroy();
+		// this would be the perfect time to put the critter into an object pool
+	}
+	else if (other->IsDestroyer == true) {
+		unit->Destroy();
+	}
+	else {
+		// collision!
+				// do math to get critters bouncing
+		Vector2 normal = Vector2Normalize(Vector2Subtract(unit->GetPosition(), other->GetPosition()));
+
+		// not even close to real physics, but fine for our needs
+		unit->SetVelocity(Vector2Scale(normal, MAX_VELOCITY));
+		// set the critter to *dirty* so we know not to process any more collisions on it
+		unit->SetDirty();
+
+		// we still want to check for collisions in the case where 1 critter is dirty - so we need a check 
+		// to make sure the other critter is clean before we do the collision response
+		if (!other->IsDirty()) {
+			other->SetVelocity(Vector2Scale(normal, -MAX_VELOCITY));
+			other->SetDirty();
+		}
+	}
 }
 
 float Grid::UnitDistance(Critter* from, Critter* to)
 {
-	float distance = (from->m_position.x - to->m_position.x) + (from->m_position.y - to->m_position.y);
+	float distance = Vector2Distance(from->GetPosition(), to->GetPosition());
 	return distance;
 }
 
@@ -139,12 +173,22 @@ void Grid::HandleUnit(Critter* unit, Critter* other)
 {
 	while (other != NULL)
 	{
+
 		if (UnitDistance(unit, other) < ATTACK_DISTANCE)
 		{
 			HandleCollision(unit, other);
 		}
 
 		other = other->next_;
+
+		if (other != NULL) {
+			if (other == other->next_) {
+				other->next_ = NULL; //object pointing to itself
+			}
+			else if (other->next_ == other->prev_ && other->next_ != NULL) {
+				other->next_ = NULL; //If there are 2 objects pointing to eachother's backs, circle reference
+			}
+		}
 	}
 }
 
@@ -160,11 +204,9 @@ void Grid::Move(Critter* unit, Vector2 vec)
 	// See which cell it's moving to.
 	int cellX = (int)(x / Grid::CELL_SIZE);
 	int cellY = (int)(y / Grid::CELL_SIZE);
-
-	unit->posInGrid = Vector2{ (float)cellX, (float)cellY };
 	
-	unit->m_position.x = x;
-	unit->m_position.y = y;
+	unit->m_position.x += x;
+	unit->m_position.y += y;
 
 	// If it didn't change cells, we're done.
 	if (oldCellX == cellX && oldCellY == cellY) return;

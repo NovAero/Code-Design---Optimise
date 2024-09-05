@@ -4,6 +4,9 @@
 class Critter
 {
 	friend class Grid;	
+
+public:
+	bool IsDestroyer;
 protected:	
 	Vector2 m_position;
 	Vector2 m_velocity;
@@ -18,16 +21,13 @@ protected:
 
 	bool m_isLoaded;
 	bool m_isDirty;// indicates if we've already processed a collision response for this critter
-
-public:
-	Vector2 posInGrid;
 	
 public:
 	Critter();
-	Critter(Grid* grid, Vector2 position, Vector2 velocity, float radius, Texture2D texture);
+	Critter(Grid* grid, Vector2 position, Vector2 velocity, float radius, Texture2D texture, bool destroyer);
 	~Critter();
 
-	void Init(Grid* grid, Vector2 position, Vector2 velocity, float radius, Texture2D texture);
+	void Init(Grid* grid, Vector2 position, Vector2 velocity, float radius, Texture2D texture, bool destroyer);
 	void Destroy();
 	void Update(float dt);
 	void Draw();
@@ -86,5 +86,7 @@ public:
 	static const int CELL_SIZE = 100;
 
 private:
+
 	Critter* cells_[NUM_CELLS][NUM_CELLS];
+
 };
