@@ -36,6 +36,5 @@ unsigned int TextureManager::GenerateHash(std::string fileName)
 	for (int i = 0; i < fileName.length(); ++i) {
 		hash = (hash * seed) + fileName[i];
 	}
-
 	return hash;
 }

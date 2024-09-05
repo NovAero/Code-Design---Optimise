@@ -5,7 +5,6 @@
 #include <time.h>
 #include "Critter.h"
 #include <vector>
-#include "QuadTree.h"
 
 class GameManager
 {
@@ -24,17 +23,15 @@ public:
 
 public:
 	const int screenWidth = 800;
-	const int screenHeight = 450;
+	const int screenHeight = 800;
 	const int CRITTER_COUNT = 50;
 	const int MAX_VELOCITY = 80;
 
 private:
 	TextureManager tm;
-	Quadtree m_quadtree{ screenWidth, screenHeight };
+	Grid* grid;
 
 	// create some critters
-
-
 	Critter* critters;
 	Critter* destroyer;
 

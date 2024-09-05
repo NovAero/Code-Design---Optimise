@@ -1,15 +1,9 @@
 #include "GameManager.h"
 #include <random>
 
-GameManager::GameManager()
-{
-}
+GameManager::GameManager() {}
 
-GameManager::~GameManager()
-{
-
-}
-
+GameManager::~GameManager() {}
 
 bool GameManager::Init()
 {
@@ -24,6 +18,7 @@ bool GameManager::Init()
     srand(time(NULL));
 
     critters = new Critter[CRITTER_COUNT + 10];
+    grid = new Grid;
 
     for (int i = 0; i < CRITTER_COUNT; i++)
     {
@@ -32,27 +27,20 @@ bool GameManager::Init()
         // normalize and scale by a random speed
         velocity = Vector2Scale(Vector2Normalize(velocity), MAX_VELOCITY);
 
-        //// create a critter in a random location
-        //critters[i].Init(
-
-        critters[i].Init(Vector2{ (float)(5 + rand() % (screenWidth - 10)), (float)(5 + (rand() % screenHeight - 10)) },
+        // create a critter in a random location
+          critters[i].Init(grid, Vector2{ (float)(5 + rand() % (screenWidth - 10)), (float)(5 + (rand() % screenHeight - 10)) },
             velocity,
             12, tm.GetTexture("10.png"));
-
-        m_quadtree.Insert(&critters[i]);
     }
 
     Vector2 velocity = { -100 + (rand() % 200), -100 + (rand() % 200) };
     velocity = Vector2Scale(Vector2Normalize(velocity), MAX_VELOCITY);
 
-    destroyer = new Critter(Vector2{ (float)(screenWidth >> 1), (float)(screenHeight >> 1) }, velocity, 20, tm.GetTexture("9.png"));
-
-    m_quadtree.Insert(destroyer);
+    destroyer = new Critter(grid, Vector2{ (float)(screenWidth >> 1), (float)(screenHeight >> 1) }, velocity, 20, tm.GetTexture("9.png"));
 
     nextSpawnPos = destroyer->GetPosition();
 
     return true;
-
 }
 
 void GameManager::Run()
@@ -165,7 +153,7 @@ void GameManager::Run()
                 Vector2 pos = destroyer->GetPosition();
                 pos = Vector2Add(pos, Vector2Scale(normal, -50));
                 // its pretty ineficient to keep reloading textures. ...if only there was something else we could do
-                critters[i].Init(pos, Vector2Scale(normal, -MAX_VELOCITY), 12, tm.GetTexture("10.png"));
+                critters[i].Init(grid, pos, Vector2Scale(normal, -MAX_VELOCITY), 12, tm.GetTexture("10.png"));
                 break;
             }
         }
@@ -176,9 +164,9 @@ void GameManager::Run()
     //----------------------------------------------------------------------------------
     BeginDrawing();
 
-    m_quadtree.Draw();
-
     ClearBackground(RAYWHITE);
+
+    grid->Draw();
 
     // draw the critters
     for (int i = 0; i < CRITTER_COUNT; i++)
@@ -192,6 +180,15 @@ void GameManager::Run()
 
     DrawFPS(10, 10);
 
+    char d_pos[4];
+
+    d_pos[0] = destroyer->posInGrid.x + 48;
+    d_pos[1] = ',';
+    d_pos[2] = destroyer->posInGrid.y + 48;
+    d_pos[3] = '\0';
+
+    DrawText(d_pos, 10, 30, 30, DARKGREEN);
+
     EndDrawing();
 }
 
@@ -201,7 +198,6 @@ void GameManager::Exit()
     {
         critters[i].Destroy();
     }
-
 }
 
 int GameManager::ScreenSpace() const
