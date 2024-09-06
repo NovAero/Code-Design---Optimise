@@ -13,8 +13,7 @@ Grid::~Grid()
 {
 
 	cells_.clear();
-
-	delete destroyer;
+	
 }
 
 void Grid::Add(Critter* toAdd)
@@ -43,17 +42,19 @@ void Grid::CheckContents(Cell* cell)
 
 		//if it hasnt moved cells, do nothing
 		if (cell->containedCritters[i]->oldCell == newCell) {
-			++i;
 			continue;
-		}
+		} //If the cell is out of range, due to window discrepancies, do nothing 
 		if (newCell >= cells_.size()) {
-			++i;
 			continue;
 		}
+
+		//set the item's previous cell to this cell, for checking when its moved later
 		cell->containedCritters[i]->oldCell = newCell;
 		
+		//add the critter to the new cell's vector
 		cells_[newCell]->containedCritters.push_back(cell->containedCritters[i]);
 
+		//find and delete the item from the old cell's vector
 		Critter* d = cell->containedCritters[i];
 		auto it = std::find(cell->containedCritters.begin(), cell->containedCritters.end(),	d);
 		// If element is found found, erase it 
@@ -101,7 +102,7 @@ void Grid::HandleBounceCell(Cell* cell)
 	{
 		for (int j = 0; j < cell->containedCritters.size(); j++) {
 			if (cell->containedCritters[i]->IsDestroyer == true || cell->containedCritters[j]->IsDestroyer == true) continue;
-			if (i == j || cell->containedCritters[i]->IsDirty()) // note: the other critter (j) could be dirty - that's OK
+			if (i == j || cell->containedCritters[i]->IsDirty() || cell->containedCritters[i]->IsDead() == true || cell->containedCritters[j]->IsDead() == true) // note: the other critter (j) could be dirty - that's OK
 				continue;
 			// check every critter against every other critter
 			float dist = Vector2Distance(cell->containedCritters[i]->GetPosition(), cell->containedCritters[j]->GetPosition());

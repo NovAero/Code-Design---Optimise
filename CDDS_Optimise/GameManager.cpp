@@ -6,7 +6,7 @@ GameManager::GameManager() {}
 
 GameManager::~GameManager() {
 
-    delete critters;
+    delete[] critters;
     delete destroyer;
 }
 
@@ -139,8 +139,9 @@ void GameManager::Run()
     // Draw
     //----------------------------------------------------------------------------------
     BeginDrawing();
-
     ClearBackground(RAYWHITE);
+
+    grid.Draw();
 
     // draw the critters
     for (int i = 0; i < CRITTER_COUNT; i++)

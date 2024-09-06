@@ -26,7 +26,7 @@ public:
 public:
 	const int screenWidth = 800;
 	const int screenHeight = 800;
-	const int CRITTER_COUNT = 50;
+	const int CRITTER_COUNT = 100;
 	const int MAX_VELOCITY = 80;
 
 private:
