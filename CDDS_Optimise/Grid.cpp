@@ -11,6 +11,7 @@ Grid::Grid()
 
 Grid::~Grid()
 {
+
 	cells_.clear();
 
 	delete destroyer;

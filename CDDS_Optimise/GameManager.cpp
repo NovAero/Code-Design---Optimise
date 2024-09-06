@@ -4,7 +4,11 @@
 
 GameManager::GameManager() {}
 
-GameManager::~GameManager() {}
+GameManager::~GameManager() {
+
+    delete critters;
+    delete destroyer;
+}
 
 bool GameManager::Init()
 {
