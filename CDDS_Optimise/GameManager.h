@@ -5,6 +5,7 @@
 #include <time.h>
 #include "Critter.h"
 #include <vector>
+#include "Grid.h"
 
 class GameManager
 {
@@ -29,7 +30,7 @@ public:
 
 private:
 	TextureManager tm;
-	Grid* grid;
+	Grid grid;
 
 	// create some critters
 	Critter* critters;

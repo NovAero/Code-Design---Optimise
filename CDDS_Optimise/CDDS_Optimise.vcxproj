@@ -169,6 +169,7 @@
   <ItemGroup>
     <ClCompile Include="Critter.cpp" />
     <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>

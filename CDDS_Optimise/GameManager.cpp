@@ -19,11 +19,9 @@ bool GameManager::Init()
     srand(time(NULL));
 
     critters = new Critter[CRITTER_COUNT + 10];
-    grid = new Grid;
 
-    int i;
 
-    for (i = 0; i < CRITTER_COUNT; i++)
+    for (int i = 0; i < CRITTER_COUNT; i++)
     {
         // create a random direction vector for the velocity
         Vector2 velocity = { -100 + (rand() % 200), -100 + (rand() % 200) };
@@ -31,7 +29,7 @@ bool GameManager::Init()
         velocity = Vector2Scale(Vector2Normalize(velocity), MAX_VELOCITY);
 
         // create a critter in a random location
-        critters[i].Init(grid, Vector2{ (float)(5 + rand() % (screenWidth - 10)), (float)(5 + (rand() % screenHeight - 10)) },
+        critters[i].Init(Vector2{ (float)(5 + rand() % (screenWidth - 10)), (float)(5 + (rand() % screenHeight - 10)) },
             velocity,
             12, tm.GetTexture("10.png"), false);
     }
@@ -39,7 +37,7 @@ bool GameManager::Init()
     Vector2 velocity = { -100 + (rand() % 200), -100 + (rand() % 200) };
     velocity = Vector2Scale(Vector2Normalize(velocity), MAX_VELOCITY);
 
-    destroyer = new Critter(grid, Vector2{ (float)(screenWidth >> 1), (float)(screenHeight >> 1) }, velocity, 20, tm.GetTexture("9.png"), true);
+    destroyer = new Critter( Vector2{ (float)(screenWidth >> 1), (float)(screenHeight >> 1) }, velocity, 20, tm.GetTexture("9.png"), true);
 
     nextSpawnPos = destroyer->GetPosition();
 
@@ -134,14 +132,13 @@ void GameManager::Run()
                 Vector2 pos = destroyer->GetPosition();
                 pos = Vector2Add(pos, Vector2Scale(normal, -50));
                 // its pretty ineficient to keep reloading textures. ...if only there was something else we could do
-                critters[i].Init(grid, pos, Vector2Scale(normal, -MAX_VELOCITY), 12, tm.GetTexture("10.png"), false);
+                critters[i].Init( pos, Vector2Scale(normal, -MAX_VELOCITY), 12, tm.GetTexture("10.png"), false);
                 break;
             }
         }
         nextSpawnPos = destroyer->GetPosition();
     }
 
-    grid->HandleCritters();
 
     // Draw
     //----------------------------------------------------------------------------------
@@ -149,7 +146,7 @@ void GameManager::Run()
 
     ClearBackground(RAYWHITE);
 
-    grid->Draw();
+    grid.Draw();
 
     // draw the critters
     for (int i = 0; i < CRITTER_COUNT; i++)
