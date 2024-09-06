@@ -90,7 +90,6 @@ void Grid::HandleDestroyerCell(Cell* cell)
 		if (dist < cell->containedCritters[it]->GetRadius() + destroyer->GetRadius())
 		{
 			cell->containedCritters[it]->Destroy();
-			CheckContents(cell);
 		}
 	}
 }

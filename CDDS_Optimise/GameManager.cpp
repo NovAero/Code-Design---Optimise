@@ -13,7 +13,7 @@ bool GameManager::Init()
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
 
-    //SetTargetFPS(60);
+    SetTargetFPS(60);
     //--------------------------------------------------------------------------------------
 
     srand(time(NULL));
@@ -103,6 +103,8 @@ void GameManager::Run()
 
     }
 
+    grid.Update(delta);
+
     //Check for critter collisjons
 
     timer -= delta;
@@ -128,7 +130,6 @@ void GameManager::Run()
         nextSpawnPos = destroyer->GetPosition();
     }
 
-    grid.Update(delta);
     HandleCollisions();
 
     // Draw
@@ -136,8 +137,6 @@ void GameManager::Run()
     BeginDrawing();
 
     ClearBackground(RAYWHITE);
-
-    grid.Draw();
 
     // draw the critters
     for (int i = 0; i < CRITTER_COUNT; i++)
