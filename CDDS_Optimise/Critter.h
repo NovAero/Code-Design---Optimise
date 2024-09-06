@@ -6,15 +6,14 @@ class Critter
 
 public:
 	bool IsDestroyer;
+	int oldCell;
 protected:	
 	Vector2 m_position;
 	Vector2 m_velocity;
 	float m_radius;
 
+
 	Texture2D m_texture;
-	\
-	Critter* prev_;
-	Critter* next_;
 
 	bool m_isLoaded;
 	bool m_isDirty;// indicates if we've already processed a collision response for this critter
@@ -34,9 +33,9 @@ public:
 	void SetX(float x) { m_position.x = x; }
 	void SetY(float y) { m_position.y = y; }
 
-	void Move(Vector2 vec);
+	void Move(float dt);
 
-	Vector2 GetPosition() { return m_position; }
+	Vector2 GetPosition() { return Vector2{ m_position.x + m_radius , m_position.y + m_radius  }; }
 	void SetPosition(Vector2 position) { m_position = position; }
 
 	Vector2 GetVelocity() { return m_velocity; }

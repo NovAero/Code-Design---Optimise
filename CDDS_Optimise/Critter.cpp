@@ -47,12 +47,7 @@ void Critter::Update(float dt)
 	if (m_isLoaded == false)
 		return;
 
-	Vector2 moveVector = { m_velocity.x * dt, m_velocity.y * dt };
-
-	Move(moveVector);
-
-	//m_position.x += m_velocity.x * dt;
-	//m_position.y += m_velocity.y * dt;
+	Move(dt);
 
 	m_isDirty = false;
 }
@@ -65,8 +60,14 @@ void Critter::Draw()
 	DrawTexture(m_texture, m_position.x, m_position.y, WHITE);
 }
 
-void Critter::Move(Vector2 vec)
+void Critter::Move(float dt)
 {
+	if (m_isLoaded == false) return;
+
+	m_position.x += m_velocity.x * dt;
+	m_position.y += m_velocity.y * dt;
+
+
 }
 
 

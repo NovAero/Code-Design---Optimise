@@ -20,6 +20,7 @@ public:
 	virtual void Run();
 	virtual void Exit();
 
+	void HandleCollisions();
 	int ScreenSpace() const;
 
 public:

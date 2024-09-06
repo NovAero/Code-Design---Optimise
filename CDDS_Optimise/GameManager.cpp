@@ -32,14 +32,18 @@ bool GameManager::Init()
         critters[i].Init(Vector2{ (float)(5 + rand() % (screenWidth - 10)), (float)(5 + (rand() % screenHeight - 10)) },
             velocity,
             12, tm.GetTexture("10.png"), false);
+
+        grid.Add(&critters[i]);
     }
 
     Vector2 velocity = { -100 + (rand() % 200), -100 + (rand() % 200) };
     velocity = Vector2Scale(Vector2Normalize(velocity), MAX_VELOCITY);
 
-    destroyer = new Critter( Vector2{ (float)(screenWidth >> 1), (float)(screenHeight >> 1) }, velocity, 20, tm.GetTexture("9.png"), true);
+    destroyer = new Critter( Vector2{ (float)(screenWidth >> 1), (float)(screenHeight >> 1) }, velocity, 30, tm.GetTexture("9.png"), true);
 
     nextSpawnPos = destroyer->GetPosition();
+
+    grid.destroyer = destroyer;
 
     return true;
 }
@@ -99,22 +103,7 @@ void GameManager::Run()
 
     }
 
-//     check for critter-on-critter collisions*/
-    //for (int i = 0; i < CRITTER_COUNT; i++)
-    //{
-    //    for (int j = 0; j < CRITTER_COUNT; j++) {
-    //        if (i == j || critters[i].IsDirty()) // note: the other critter (j) could be dirty - that's OK
-    //            continue;
-    //        // check every critter against every other critter
-    //        float dist = Vector2Distance(critters[i].GetPosition(), critters[j].GetPosition());
-    //        if (dist < critters[i].GetRadius() + critters[j].GetRadius())
-    //        {
-    //            
-    //            break;
-    //        }
-    //    }
-    //}
-
+    //Check for critter collisjons
 
     timer -= delta;
     if (timer <= 0)
@@ -139,6 +128,8 @@ void GameManager::Run()
         nextSpawnPos = destroyer->GetPosition();
     }
 
+    grid.Update(delta);
+    HandleCollisions();
 
     // Draw
     //----------------------------------------------------------------------------------
@@ -169,6 +160,11 @@ void GameManager::Exit()
     {
         critters[i].Destroy();
     }
+}
+
+void GameManager::HandleCollisions()
+{
+    grid.HandleCollisions();
 }
 
 int GameManager::ScreenSpace() const
