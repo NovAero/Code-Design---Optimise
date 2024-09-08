@@ -35,6 +35,7 @@ private:
 
 	std::vector<Cell*> cells_;
 
+	int MAX_VELOCITY = 80;
 
 public:
 	Grid();
@@ -56,8 +57,6 @@ public:
 	Vector2 GetGridXY(int index);
 	//Get coords in screen space
 	Vector2 GetWorldXY(int index);
-
-	int MAX_VELOCITY = 80;
 
 	void Update(float delta);
 	void Draw();
